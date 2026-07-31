@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pulse — a small, honest feed</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ===================== AUTH SCREEN ===================== -->
+<div id="auth-screen" class="auth-screen">
+  <div class="auth-card">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <h1>Pulse</h1>
+    </div>
+    <p class="brand-tag">A small feed for people you actually follow.</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">Log in</button>
+      <button class="auth-tab" data-tab="register">Create account</button>
+    </div>
+
+    <form id="login-form" class="auth-form">
+      <label>Username or email
+        <input type="text" name="emailOrUsername" required autocomplete="username" />
+      </label>
+      <label>Password
+        <input type="password" name="password" required autocomplete="current-password" />
+      </label>
+      <p class="form-error" id="login-error"></p>
+      <button type="submit" class="btn-primary">Log in</button>
+    </form>
+
+    <form id="register-form" class="auth-form hidden">
+      <label>Username
+        <input type="text" name="username" required minlength="3" maxlength="20" autocomplete="username" />
+      </label>
+      <label>Email
+        <input type="email" name="email" required autocomplete="email" />
+      </label>
+      <label>Password
+        <input type="password" name="password" required minlength="6" autocomplete="new-password" />
+      </label>
+      <p class="form-hint">At least 6 characters.</p>
+      <p class="form-error" id="register-error"></p>
+      <button type="submit" class="btn-primary">Create account</button>
+    </form>
+  </div>
+  <footer class="dev-credit dev-credit--auth">
+    Developer: <a href="https://sol-ethio-coder.netlify.app" target="_blank" rel="noopener noreferrer">Sol Ethio Coder</a>
+  </footer>
+</div>
+
+<!-- ===================== APP SHELL ===================== -->
+<div id="app-shell" class="app-shell hidden">
+
+  <!-- Left rail -->
+  <aside class="rail">
+    <div class="brand brand--rail">
+      <span class="brand-dot"></span>
+      <span class="brand-word">Pulse</span>
+    </div>
+    <nav class="rail-nav">
+      <button class="rail-link active" data-view="feed-following">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 12h16M4 6h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Following</span>
+      </button>
+      <button class="rail-link" data-view="feed-all">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
+        <span>Discover</span>
+      </button>
+      <button class="rail-link" data-view="feed-trending">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 18 10 10 14 14 20 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Trending</span>
+      </button>
+      <button class="rail-link" data-view="notifications">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 17h12l-1.6-2.4a2 2 0 0 1-.34-1.1V9.5a4.06 4.06 0 0 0-8.12 0v4a2 2 0 0 1-.34 1.1L6 17Zm4 3a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Notifications</span>
+        <span id="notif-badge" class="notif-badge hidden">0</span>
+      </button>
+      <button class="rail-link" data-view="people">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><circle cx="17" cy="9" r="2.6" stroke="currentColor" stroke-width="1.8"/><path d="M3 19c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5M14.5 14c2.5.2 4.5 2 4.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span>People</span>
+      </button>
+      <button class="rail-link" data-view="saved">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M7 4h10v16l-5-3.5L7 20V4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <span>Saved</span>
+      </button>
+      <button class="rail-link" data-view="profile-self">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>My profile</span>
+      </button>
+    </nav>
+    <button id="logout-btn" class="rail-logout">Log out</button>
+    <footer class="dev-credit">
+      Developer: <a href="https://sol-ethio-coder.netlify.app" target="_blank" rel="noopener noreferrer">Sol Ethio Coder</a>
+    </footer>
+  </aside>
+
+  <!-- Center feed -->
+  <main class="feed-col">
+    <header class="feed-header">
+      <h2 id="feed-title">Following</h2>
+      <div class="pulse-line" aria-hidden="true">
+        <svg viewBox="0 0 200 24" preserveAspectRatio="none">
+          <polyline points="0,12 40,12 52,3 64,21 76,12 200,12" />
+        </svg>
+      </div>
+    </header>
+
+    <form id="composer" class="composer">
+      <div class="avatar" id="composer-avatar"></div>
+      <div class="composer-body">
+        <textarea id="composer-text" maxlength="500" placeholder="What's happening?" rows="2"></textarea>
+        <div class="composer-row">
+          <span class="char-count" id="char-count">500</span>
+          <button type="submit" class="btn-primary btn-small">Post</button>
+        </div>
+      </div>
+    </form>
+
+    <div id="feed-list" class="feed-list">
+      <p class="empty-state">Loading your feed…</p>
+    </div>
+  </main>
+
+  <!-- Right sidebar -->
+  <aside class="side-col">
+    <div class="side-card">
+      <h3>Find people</h3>
+      <input type="text" id="user-search" placeholder="Search by username" />
+      <div id="user-search-results" class="people-list"></div>
+    </div>
+    <div class="side-card">
+      <h3>Suggested</h3>
+      <div id="suggested-list" class="people-list"></div>
+    </div>
+  </aside>
+</div>
+
+<!-- Profile view (overlay panel reused inside feed-col via JS swap) -->
+<template id="tpl-post">
+  <article class="post-card" data-id="">
+    <div class="post-head">
+      <div class="avatar"></div>
+      <div class="post-meta">
+        <span class="post-author"></span>
+        <span class="post-time"></span>
+      </div>
+      <button class="post-edit" title="Edit post">
+        <svg viewBox="0 0 24 24" fill="none"><path d="m15 4 5 5-11 11H4v-5L15 4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="post-delete" title="Delete post">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 7h12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-8 0 1 13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1l1-13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <p class="post-text"></p>
+    <form class="post-edit-form hidden">
+      <textarea maxlength="500" rows="2"></textarea>
+      <div class="post-edit-actions">
+        <button type="button" class="edit-cancel">Cancel</button>
+        <button type="submit" class="btn-primary btn-small">Save</button>
+      </div>
+    </form>
+    <div class="post-actions">
+      <button class="action-like">
+        <span class="pulse-dot"></span>
+        <span class="like-count">0</span>
+      </button>
+      <button class="action-comment">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H8l-4 4V5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <span class="comment-count">0</span>
+      </button>
+      <button class="action-bookmark" title="Save post">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M7 4h10v16l-5-3.5L7 20V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <div class="comments-block hidden">
+      <div class="comments-list"></div>
+      <form class="comment-form">
+        <input type="text" maxlength="300" placeholder="Write a comment…" />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </article>
+</template>
+
+<template id="tpl-person-row">
+  <div class="person-row">
+    <div class="avatar"></div>
+    <div class="person-info">
+      <span class="person-name"></span>
+      <span class="person-handle"></span>
+    </div>
+    <button class="follow-btn">Follow</button>
+  </div>
+</template>
+
+<div id="toast-stack" class="toast-stack" aria-live="polite"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
