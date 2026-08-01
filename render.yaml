@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: pulse-social-app
+    runtime: node
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+    # PORT is set automatically by Render — server.js already reads
+    # process.env.PORT, so nothing else is needed here.
