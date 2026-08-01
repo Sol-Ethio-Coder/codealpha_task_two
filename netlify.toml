@@ -1,0 +1,18 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+  command = "npm install"
+
+# API requests go to the serverless function. The "/api" appears twice in
+# "to" on purpose: our Express routes are all mounted under "/api/..."
+# unchanged from local dev, and serverless-http's basePath option (set in
+# netlify/functions/api.js) strips only "/.netlify/functions/api", leaving
+# the second "/api/..." intact for Express to match.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/api/:splat"
+  status = 200
+  force = true
+
+# Everything else (index.html, css, js, favicon) is served directly from
+# the "public" folder by Netlify's CDN — it never touches the function.

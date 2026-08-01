@@ -154,6 +154,36 @@ Sample friends won't seed themselves on Vercel — run `npm run seed` locally
 once, pointed at the same `MONGODB_URI` you used in step 4, before or after
 deploying.
 
+## 6. Deploy to Netlify (via GitHub) — instead of, or alongside, Vercel
+
+This repo is set up for Netlify too, independently of the Vercel config
+above — `netlify.toml` + `netlify/functions/api.js` wrap the exact same
+Express app in a Netlify Function using `serverless-http`. Static files
+(`public/`) are served directly by Netlify's CDN; only `/api/*` requests
+reach the function.
+
+1. Push the repo to GitHub (see the earlier steps).
+2. Go to [app.netlify.com/start](https://app.netlify.com/start), sign in with
+   GitHub, and pick this repo.
+3. Netlify should auto-detect the settings from `netlify.toml`
+   (publish directory `public`, functions directory `netlify/functions`,
+   build command `npm install`) — leave them as-is.
+4. Add environment variables (Site configuration → Environment variables):
+   `MONGODB_URI` and `JWT_SECRET`, same values as your local `.env`.
+5. In MongoDB Atlas → Network Access, allow `0.0.0.0/0` — same reasoning as
+   Vercel: serverless functions run from a changing pool of IPs.
+6. Click **Deploy site**. Every future push to your main branch redeploys
+   automatically.
+
+As with Vercel, run `npm run seed` locally against the same `MONGODB_URI`
+to populate sample friends — Netlify won't run it for you.
+
+**If API calls 404 or come back as HTML after deploying:** open Netlify's
+function logs (Site → Logs → Functions) — the JSON 404 handler in
+`server.js` will tell you the exact path Express saw, which is the fastest
+way to catch a redirect/basePath mismatch if you ever rename the function
+file.
+
 ## API overview
 
 | Method | Route | Description |
