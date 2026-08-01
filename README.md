@@ -130,6 +130,30 @@ This prints the sample usernames — log in as any of them (password:
 follow the sample friends from the "Discover" tab. Safe to re-run; it only
 touches the sample accounts it creates.
 
+## 5. Deploy to Vercel (via GitHub)
+
+This repo is already set up for it — `vercel.json` routes every request
+(pages and `/api/*`) through `server.js` as a single serverless function, and
+`server.js` exports the Express app instead of only calling `.listen()`, so
+the same file works locally and on Vercel unchanged.
+
+1. Push the repo to GitHub (see the earlier steps for that).
+2. Go to [vercel.com/new](https://vercel.com/new), sign in with GitHub, and
+   import this repo.
+3. Framework preset: leave it as **Other** — don't let Vercel guess.
+4. Add environment variables (Project Settings → Environment Variables, or
+   during import): `MONGODB_URI` and `JWT_SECRET`, same values as your local
+   `.env`. Leave `PORT` out — Vercel manages that itself.
+5. In MongoDB Atlas → Network Access, allow `0.0.0.0/0`. Vercel's serverless
+   functions run from a changing pool of IPs, so a fixed-IP allowlist won't
+   work here.
+6. Click **Deploy**. Every future push to your main branch redeploys
+   automatically.
+
+Sample friends won't seed themselves on Vercel — run `npm run seed` locally
+once, pointed at the same `MONGODB_URI` you used in step 4, before or after
+deploying.
+
 ## API overview
 
 | Method | Route | Description |

@@ -49,4 +49,14 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Pulse server running on http://localhost:${PORT}`));
+
+// Vercel imports this file as a serverless function and calls the exported
+// app directly on each request — it never runs `node server.js`, so
+// `require.main === module` is only true for local/traditional hosting.
+// Only bind a port in that case; Vercel would ignore app.listen() anyway,
+// but this keeps local dev and Vercel using the exact same file cleanly.
+if (require.main === module) {
+  app.listen(PORT, () => console.log(`🚀 Pulse server running on http://localhost:${PORT}`));
+}
+
+module.exports = app;
